@@ -5,6 +5,8 @@ from ultralytics import YOLO
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
+from audio import Synth
+
 class Persister:
     def __init__(self, max_distance=150, max_skipped_frames=30):
         """
@@ -95,6 +97,7 @@ class VisionDetector:
         self.target_classes = [15, 16, 17, 18, 19, 21]
         self.track_history = defaultdict(lambda: None)
         self.hist = []
+        self.synth = Synth()
 
     def detect(self, frame):
         """
@@ -163,16 +166,20 @@ class VisionDetector:
         consistent_results = self.stitcher.update(parsed_results)
 
         if consistent_results:
+            result = consistent_results[0]
             self.hist.append(
                 {
-                    "id": consistent_results[0]["id"],
-                    "label": self.model.names[cls],
-                    "energy": float(speed),
-                    "presence": float(presence),
-                    "pan": float(center_x / width),
-                    "center": (center_x,center_y)
+                    "id": result["consistent_id"],
+                    "label": result["label"],
+                    "energy": result["energy"],
+                    "presence": result["presence"],
+                    "pan": result["pan"],
+                    "center": result["center"]
                 }
             )
+        
+            if result["energy"] > 0.2:
+                self.synth.gen_sound(result["energy"], result["presence"])
     
         return consistent_results, annotated_frame
 
