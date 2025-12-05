@@ -82,7 +82,7 @@ class Persister:
 
 
 class VisionDetector:
-    def __init__(self, model_name="yolov8s.pt", conf_threshold=0.2):
+    def __init__(self, model_name="yolov10s.pt", conf_threshold=0.2):
         """
         Initialize the YOLO detector with tracking capabilities.
 
@@ -94,7 +94,7 @@ class VisionDetector:
         self.model = YOLO(model_name)
         self.conf_threshold = conf_threshold
         self.stitcher = Persister(max_distance=100, max_skipped_frames=60)
-        self.target_classes = [15, 16, 17, 18, 19, 21]
+        self.target_classes = [0]
         self.track_history = defaultdict(lambda: None)
         self.hist = []
         self.synth = Synth()
@@ -244,7 +244,8 @@ class VisionDetector:
 
 if __name__ == "__main__":
     print("Testing Behavior Detector...")
-    INPUT_PATH = "video/youtube_World’s Grumpiest Cat I Frozen Planet II I BBC.avi"
+    # INPUT_PATH = "video/youtube_World’s Grumpiest Cat I Frozen Planet II I BBC.avi"
+    INPUT_PATH = "video/pplwalk.avi"
     cap = cv2.VideoCapture(INPUT_PATH)
     detector = VisionDetector()
 
